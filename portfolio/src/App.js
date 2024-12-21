@@ -4,12 +4,20 @@ import PaintWindow from './components/PaintWindow';
 import DesktopIcon from './components/DesktopIcon';
 import ContentWindow from './components/ContentWindow';
 import TerminalWindow from './components/TerminalWindow';
+import MusicWindow from './components/MusicWindow';
+import GameWindow from './components/GameWindow';
+import PhotoViewer from './components/PhotoViewer';
+import ProjectsWindow from './components/ProjectsWindow';
 
 function App() {
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
   const [isPaintOpen, setIsPaintOpen] = useState(true);
   const [openWindows, setOpenWindows] = useState([]);
   const [isTerminalOpen, setIsTerminalOpen] = useState(true);
+  const [isMusicOpen, setIsMusicOpen] = useState(false);
+  const [isGameOpen, setIsGameOpen] = useState(false);
+  const [isPhotoViewerOpen, setIsPhotoViewerOpen] = useState(false);
+  const [isProjectsOpen, setIsProjectsOpen] = useState(false);
 
   const bondBrandLoyaltyIcon = '/img/bond_brand_loyalty_icon.png';
   const elimSolutionsIcon = '/img/elim_solutions_icon.png';
@@ -123,37 +131,70 @@ function App() {
     setOpenWindows(openWindows.filter(id => id !== windowId));
   };
 
+  const handleProjectsOpen = () => {
+    setIsProjectsOpen(true);
+  };
+
   return (
     <div className="h-screen w-full bg-cyan-500 flex flex-col">
       {/* Main desktop area */}
       <div className="flex-1">
         {/* Desktop Icons */}
-        <div className="p-4 grid grid-cols-1 gap-2 w-fit">
-          <DesktopIcon
-            icon={bondBrandLoyaltyIcon}
-            title="Bond Brand Loyalty"
-            onClick={() => handleWindowOpen('bondBrandLoyalty')}
-          />
-          <DesktopIcon
-            icon={elimSolutionsIcon}
-            title="Elim Solutions"
-            onClick={() => handleWindowOpen('elimSolutions')}
-          />
-          <DesktopIcon
-            icon={buckmasterInstituteIcon}
-            title="The Buckmaster Institute"
-            onClick={() => handleWindowOpen('buckmasterInstitute')}
-          />
-          <DesktopIcon
-            icon="/img/command_line_icon.png"
-            title="Command Prompt"
-            onClick={() => setIsTerminalOpen(true)}
-          />
-          <DesktopIcon
-            icon="/img/paint_icon.png"
-            title="Paint"
-            onClick={() => setIsPaintOpen(true)}
-          />
+        <div className="p-4 grid grid-cols-2 gap-2 w-fit">
+          <div className="flex flex-col">
+            <DesktopIcon
+              icon={bondBrandLoyaltyIcon}
+              title="Bond Brand Loyalty"
+              onClick={() => handleWindowOpen('bondBrandLoyalty')}
+            />
+            <DesktopIcon
+              icon="/img/resume_icon.png"
+              title="Resume"
+              onClick={() => window.open(process.env.PUBLIC_URL + '/resume.pdf', '_blank')}
+            />
+            <DesktopIcon
+              icon={elimSolutionsIcon}
+              title="Elim Solutions"
+              onClick={() => handleWindowOpen('elimSolutions')}
+            />
+            <DesktopIcon
+              icon={buckmasterInstituteIcon}
+              title="The Buckmaster Institute"
+              onClick={() => handleWindowOpen('buckmasterInstitute')}
+            />
+            <DesktopIcon
+              icon="/img/command_line_icon.png"
+              title="Command Prompt"
+              onClick={() => setIsTerminalOpen(true)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <DesktopIcon
+              icon="/img/folder_icon.png"
+              title="Projects"
+              onClick={handleProjectsOpen}
+            />
+            <DesktopIcon
+              icon="/img/paint_icon.png"
+              title="Paint"
+              onClick={() => setIsPaintOpen(true)}
+            />
+            <DesktopIcon
+              icon="/img/music_icon.png"
+              title="Music"
+              onClick={() => setIsMusicOpen(true)}
+            />
+            <DesktopIcon
+              icon="/img/game_icon.png"
+              title="Game"
+              onClick={() => setIsGameOpen(true)}
+            />
+            <DesktopIcon
+              icon="/img/camera_icon.png" 
+              title="Photos"
+              onClick={() => setIsPhotoViewerOpen(true)} 
+            />
+          </div>
         </div>
 
         {/* Render Content Windows */}
@@ -176,6 +217,26 @@ function App() {
         <TerminalWindow 
           isOpen={isTerminalOpen} 
           onClose={() => setIsTerminalOpen(false)} 
+        />
+
+        <MusicWindow 
+          isOpen={isMusicOpen} 
+          onClose={() => setIsMusicOpen(false)} 
+        />
+
+        <GameWindow 
+          isOpen={isGameOpen} 
+          onClose={() => setIsGameOpen(false)} 
+        />
+
+        <PhotoViewer 
+          isOpen={isPhotoViewerOpen} 
+          onClose={() => setIsPhotoViewerOpen(false)} 
+        />
+
+        <ProjectsWindow 
+          isOpen={isProjectsOpen} 
+          onClose={() => setIsProjectsOpen(false)} 
         />
       </div>
 

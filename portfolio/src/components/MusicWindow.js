@@ -1,21 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 
-const ContentWindow = ({ isOpen, onClose, title, children }) => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+const MusicWindow = ({ isOpen, onClose }) => {
+  const [position, setPosition] = useState({ x: 20, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    if (isOpen) {
-      // Center the window on open
-      const windowWidth = 400; // Set your desired width
-      const windowHeight = 300; // Set your desired height
-      setPosition({
-        x: window.innerWidth / 2 - windowWidth / 2,
-        y: window.innerHeight / 2 - windowHeight / 2,
-      });
-    }
-  }, [isOpen]);
+  const windowRef = useRef(null);
 
   if (!isOpen) return null;
 
@@ -44,7 +33,7 @@ const ContentWindow = ({ isOpen, onClose, title, children }) => {
 
   return (
     <div 
-      className="fixed w-[90%] max-w-[600px] bg-gray-300 border-t border-l border-white border-r-2 border-b-2 border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
+      className="fixed w-[500px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
       style={{
         left: position.x,
         top: position.y,
@@ -56,7 +45,7 @@ const ContentWindow = ({ isOpen, onClose, title, children }) => {
     >
       {/* Window Header */}
       <div className="window-header h-8 bg-gradient-to-r from-blue-800 to-blue-600 flex items-center justify-between px-2 cursor-move">
-        <span className="text-white font-bold">{title}</span>
+        <span className="text-white font-bold select-none">Music</span>
         <button 
           onClick={onClose}
           className="text-white hover:bg-red-600 px-2 font-bold"
@@ -65,12 +54,21 @@ const ContentWindow = ({ isOpen, onClose, title, children }) => {
         </button>
       </div>
 
-      {/* Window Content */}
-      <div className="p-4 text-sm">
-        {children}
+      {/* Spotify Playlist Embed */}
+      <div className="p-2">
+        <iframe 
+          style={{ borderRadius: '12px' }} 
+          src="https://open.spotify.com/embed/playlist/3QZOaJV2H90IsfAu5PrqJ9?utm_source=generator" 
+          width="100%" 
+          height="352" 
+          frameBorder="0" 
+          allowFullScreen 
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+          loading="lazy"
+        ></iframe>
       </div>
     </div>
   );
 };
 
-export default ContentWindow; 
+export default MusicWindow; 

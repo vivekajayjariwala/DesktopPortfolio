@@ -1,12 +1,28 @@
+/* portfolio/src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@keyframes blink {
-  0% { opacity: 1; }
-  50% { opacity: 0; }
-  100% { opacity: 1; }
+
+/* Add media queries for responsiveness */
+@media (max-width: 768px) {
+  .window-header {
+    font-size: 1.2rem; /* Adjust header font size */
+  }
+  .fixed {
+    width: 90%; /* Make windows take up more width on smaller screens */
+    height: auto; /* Allow height to adjust */
+  }
+  .p-4 {
+    padding: 1rem; /* Adjust padding */
+  }
 }
 
-.animate-blink {
-  animation: blink 1s step-end infinite;
+/* Additional styles for smaller devices */
+@media (max-width: 480px) {
+  .window-header {
+    font-size: 1rem; /* Further adjust header font size */
+  }
+  .text-sm {
+    font-size: 0.8rem; /* Smaller text for mobile */
+  }
 }
