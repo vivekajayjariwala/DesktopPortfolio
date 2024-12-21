@@ -77,6 +77,10 @@ const PhotoViewer = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       fetchPhotos();
+      setPosition({
+        x: window.innerWidth / 2 - 300, // Center the window
+        y: window.innerHeight / 2 - 200,
+      });
     }
   }, [isOpen]);
 
@@ -104,9 +108,16 @@ const PhotoViewer = ({ isOpen, onClose }) => {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Constrain dragging within the viewport
+      const constrainedX = Math.max(0, Math.min(newX, window.innerWidth - 600)); // Adjust 600 to the actual width of the PhotoViewer
+      const constrainedY = Math.max(0, Math.min(newY, window.innerHeight - 400)); // Adjust 400 to the actual height of the PhotoViewer
+
       setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        x: constrainedX,
+        y: constrainedY
       });
     }
   };
@@ -123,7 +134,7 @@ const PhotoViewer = ({ isOpen, onClose }) => {
 
   return (
     <div 
-      className="fixed w-[600px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
+      className="fixed w-[90%] max-w-[600px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
       style={{
         left: position.x,
         top: position.y,

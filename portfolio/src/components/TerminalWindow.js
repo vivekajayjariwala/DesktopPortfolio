@@ -44,7 +44,14 @@ const TerminalWindow = ({ isOpen, onClose }) => {
     return () => clearInterval(typewriterInterval);
   }, [charIndex, currentFactIndex, isOpen]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      setPosition({
+        x: window.innerWidth / 2 - 250, // Center the window
+        y: window.innerHeight / 2 - 200,
+      });
+    }
+  }, [isOpen]);
 
   const handleMouseDown = (e) => {
     if (e.target.closest('.window-header')) {
@@ -58,9 +65,16 @@ const TerminalWindow = ({ isOpen, onClose }) => {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Constrain dragging within the viewport
+      const constrainedX = Math.max(0, Math.min(newX, window.innerWidth - 500)); // 500 is the width of the window
+      const constrainedY = Math.max(0, Math.min(newY, window.innerHeight - 400)); // 400 is the height of the window
+
       setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        x: constrainedX,
+        y: constrainedY
       });
     }
   };
@@ -69,9 +83,11 @@ const TerminalWindow = ({ isOpen, onClose }) => {
     setIsDragging(false);
   };
 
+  if (!isOpen) return null;
+
   return (
     <div 
-      className="fixed w-[500px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
+      className="fixed w-[90%] max-w-[500px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
       style={{
         left: position.x,
         top: position.y,

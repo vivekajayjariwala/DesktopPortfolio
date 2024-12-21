@@ -9,6 +9,15 @@ const GameWindow = ({ isOpen, onClose }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
+    if (isOpen) {
+      setPosition({
+        x: window.innerWidth / 2 - 150, // Center the window
+        y: window.innerHeight / 2 - 150,
+      });
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     if (winner) {
       const timer = setTimeout(() => {
         resetGame();
@@ -70,9 +79,16 @@ const GameWindow = ({ isOpen, onClose }) => {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Constrain dragging within the viewport
+      const constrainedX = Math.max(0, Math.min(newX, window.innerWidth - 300)); // 300 is the width of the window
+      const constrainedY = Math.max(0, Math.min(newY, window.innerHeight - 400)); // 400 is the height of the window
+
       setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        x: constrainedX,
+        y: constrainedY
       });
     }
   };
@@ -85,7 +101,7 @@ const GameWindow = ({ isOpen, onClose }) => {
 
   return (
     <div 
-      className="fixed w-[300px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
+      className="fixed w-[90%] max-w-[300px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
       style={{
         left: position.x,
         top: position.y,

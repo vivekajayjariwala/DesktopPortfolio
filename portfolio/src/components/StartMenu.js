@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
 const StartMenu = ({ isOpen, onClose }) => {
-  const [position, setPosition] = useState({ x: window.innerWidth / 2 - 300, y: window.innerHeight / 2 - 200 });
+  const [position, setPosition] = useState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 200 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (isOpen) {
+      setPosition({
+        x: window.innerWidth / 2 - 150, // Center the window
+        y: window.innerHeight / 2 - 100,
+      });
+    }
+  }, [isOpen]);
 
   const handleMouseDown = (e) => {
     if (e.target.closest('.window-header')) {
@@ -17,9 +26,16 @@ const StartMenu = ({ isOpen, onClose }) => {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Constrain dragging within the viewport
+      const constrainedX = Math.max(0, Math.min(newX, window.innerWidth - 300)); // 300 is the width of the window
+      const constrainedY = Math.max(0, Math.min(newY, window.innerHeight - 200)); // 200 is the height of the window
+
       setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
+        x: constrainedX,
+        y: constrainedY,
       });
     }
   };
@@ -28,26 +44,19 @@ const StartMenu = ({ isOpen, onClose }) => {
     setIsDragging(false);
   };
 
-  useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, dragStart]);
-
   if (!isOpen) return null;
 
   return (
     <div 
-      className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 bg-gray-300 border-t border-l border-white border-r-2 border-b-2 border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
+      className="fixed w-[90%] max-w-[300px] bg-gray-300 border-t border-l border-white border-r-2 border-b-2 border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
       style={{
         left: position.x,
         top: position.y,
       }}
       onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
       {/* Menu Header */}
       <div className="window-header h-8 bg-gradient-to-r from-blue-800 to-blue-600 flex items-center justify-between px-2 cursor-move">

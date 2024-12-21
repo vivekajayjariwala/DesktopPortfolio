@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ProjectPopup from './ProjectPopup';
 
 const projectIcons = [
@@ -62,10 +62,22 @@ const projectIcons = [
 
 const ProjectsWindow = ({ isOpen, onClose }) => {
   const [selectedProject, setSelectedProject] = useState(null);
-  const [position, setPosition] = useState({ x: window.innerWidth / 2 - 300, y: window.innerHeight / 2 - 200 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const windowRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Center the window on open
+      const windowWidth = 600; // Set your desired width
+      const windowHeight = 400; // Set your desired height
+      setPosition({
+        x: window.innerWidth / 2 - windowWidth / 2,
+        y: window.innerHeight / 2 - windowHeight / 2,
+      });
+    }
+  }, [isOpen]);
 
   const handleMouseDown = (e) => {
     if (e.target.closest('.window-header')) {
@@ -79,9 +91,19 @@ const ProjectsWindow = ({ isOpen, onClose }) => {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Get the actual width of the window
+      const windowWidth = windowRef.current.getBoundingClientRect().width;
+
+      // Constrain dragging within the viewport
+      const constrainedX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth)); // Use actual width
+      const constrainedY = Math.max(0, Math.min(newY, window.innerHeight - 400)); // 400 is the height of the window
+
       setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        x: constrainedX,
+        y: constrainedY
       });
     }
   };
@@ -89,20 +111,6 @@ const ProjectsWindow = ({ isOpen, onClose }) => {
   const handleMouseUp = () => {
     setIsDragging(false);
   };
-
-  React.useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    } else {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
 
   const handleProjectClick = (project) => {
     setSelectedProject(project);
@@ -118,12 +126,15 @@ const ProjectsWindow = ({ isOpen, onClose }) => {
     <>
       <div 
         ref={windowRef}
-        className="fixed w-[600px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
+        className="fixed w-[90%] max-w-[600px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
         style={{
           left: position.x,
           top: position.y,
         }}
         onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
       >
         {/* Window Header */}
         <div className="window-header h-8 bg-gradient-to-r from-blue-800 to-blue-600 flex items-center justify-between px-2 cursor-move">

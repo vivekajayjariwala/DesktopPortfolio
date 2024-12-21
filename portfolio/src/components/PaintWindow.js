@@ -1,5 +1,5 @@
 import { ReactSketchCanvas } from 'react-sketch-canvas';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 const PaintWindow = ({ isOpen, onClose }) => {
   const canvasRef = useRef(null);
@@ -9,7 +9,14 @@ const PaintWindow = ({ isOpen, onClose }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      setPosition({
+        x: window.innerWidth / 2 - 225, // Center the window
+        y: window.innerHeight / 2 - 200,
+      });
+    }
+  }, [isOpen]);
 
   const handleMouseDown = (e) => {
     if (e.target.closest('.window-header')) {
@@ -23,9 +30,16 @@ const PaintWindow = ({ isOpen, onClose }) => {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Constrain dragging within the viewport
+      const constrainedX = Math.max(0, Math.min(newX, window.innerWidth - 450)); // 450 is the width of the window
+      const constrainedY = Math.max(0, Math.min(newY, window.innerHeight - 400)); // 400 is the height of the window
+
       setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        x: constrainedX,
+        y: constrainedY
       });
     }
   };
@@ -34,9 +48,11 @@ const PaintWindow = ({ isOpen, onClose }) => {
     setIsDragging(false);
   };
 
+  if (!isOpen) return null;
+
   return (
     <div 
-      className="fixed w-[450px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
+      className="fixed w-[90%] max-w-[450px] bg-gray-300 border-2 border-t-white border-l-white border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
       style={{
         left: position.x,
         top: position.y,
@@ -59,7 +75,7 @@ const PaintWindow = ({ isOpen, onClose }) => {
 
       {/* Paint Canvas */}
       <div className="p-2 bg-gray-200 flex-1">
-        <div className="w-[400px] h-[400px]">
+        <div className="w-full h-[400px]">
           <ReactSketchCanvas
             ref={canvasRef}
             strokeWidth={strokeWidth}
@@ -67,8 +83,8 @@ const PaintWindow = ({ isOpen, onClose }) => {
             canvasColor="white"
             style={{
               border: '1px solid #999',
-              width: '400px',
-              height: '400px'
+              width: '100%',
+              height: '100%'
             }}
           />
         </div>

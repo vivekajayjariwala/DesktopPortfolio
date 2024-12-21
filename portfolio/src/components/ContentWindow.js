@@ -17,8 +17,6 @@ const ContentWindow = ({ isOpen, onClose, title, children }) => {
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const handleMouseDown = (e) => {
     if (e.target.closest('.window-header')) {
       setIsDragging(true);
@@ -31,9 +29,16 @@ const ContentWindow = ({ isOpen, onClose, title, children }) => {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Constrain dragging within the viewport
+      const constrainedX = Math.max(0, Math.min(newX, window.innerWidth - 400)); // 400 is the width of the window
+      const constrainedY = Math.max(0, Math.min(newY, window.innerHeight - 300)); // 300 is the height of the window
+
       setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        x: constrainedX,
+        y: constrainedY
       });
     }
   };
@@ -42,9 +47,11 @@ const ContentWindow = ({ isOpen, onClose, title, children }) => {
     setIsDragging(false);
   };
 
+  if (!isOpen) return null;
+
   return (
     <div 
-      className="fixed w-[90%] max-w-[600px] bg-gray-300 border-t border-l border-white border-r-2 border-b-2 border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
+      className="fixed w-[90%] max-w-[400px] bg-gray-300 border-t border-l border-white border-r-2 border-b-2 border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
       style={{
         left: position.x,
         top: position.y,

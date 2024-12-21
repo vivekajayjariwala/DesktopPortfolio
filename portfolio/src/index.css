@@ -3,7 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add media queries for responsiveness */
+/* portfolio/src/index.css */
 @media (max-width: 768px) {
   .window-header {
     font-size: 1.2rem; /* Adjust header font size */

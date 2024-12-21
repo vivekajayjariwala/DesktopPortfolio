@@ -1,10 +1,22 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 const ProjectPopup = ({ project, onClose }) => {
-  const [position, setPosition] = useState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 100 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const popupRef = useRef(null);
+
+  useEffect(() => {
+    if (project) {
+      // Center the window on open
+      const windowWidth = 400; // Set your desired width
+      const windowHeight = 300; // Set your desired height
+      setPosition({
+        x: window.innerWidth / 2 - windowWidth / 2,
+        y: window.innerHeight / 2 - windowHeight / 2,
+      });
+    }
+  }, [project]);
 
   const handleMouseDown = (e) => {
     if (e.target.closest('.window-header')) {
@@ -18,9 +30,16 @@ const ProjectPopup = ({ project, onClose }) => {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Constrain dragging within the viewport
+      const constrainedX = Math.max(0, Math.min(newX, window.innerWidth - 400)); // 400 is the width of the popup
+      const constrainedY = Math.max(0, Math.min(newY, window.innerHeight - 300)); // 300 is the height of the popup
+
       setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        x: constrainedX,
+        y: constrainedY
       });
     }
   };
@@ -29,28 +48,16 @@ const ProjectPopup = ({ project, onClose }) => {
     setIsDragging(false);
   };
 
-  React.useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    } else {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
-
   if (!project) return null;
 
   return (
     <div 
-      className="fixed w-96 bg-gray-300 border-t border-l border-white border-r-2 border-b-2 border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo'] flex flex-col" 
-      style={{ left: position.x, top: position.y, transform: 'translate(-50%, -50%)' }}
+      className="fixed w-[90%] max-w-[400px] bg-gray-300 border-t border-l border-white border-r-2 border-b-2 border-r-gray-800 border-b-gray-800 shadow-lg font-['Archivo']"
+      style={{ left: position.x, top: position.y }}
       onMouseDown={handleMouseDown}
-      ref={popupRef}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
       {/* Window Header */}
       <div className="window-header h-8 bg-gradient-to-r from-blue-800 to-blue-600 flex items-center justify-between px-2 cursor-move">
